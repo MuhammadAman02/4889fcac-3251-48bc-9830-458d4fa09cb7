@@ -49,10 +49,29 @@ export async function createApp() {
   app.register(root, { prefix: "/" });
   app.register(fruitRoutes);
 
-  // Global error handler
+  // Global error handler with better logging
   app.setErrorHandler((error, request, reply) => {
+    console.error('Global error handler caught:', {
+      error: error.message,
+      stack: error.stack,
+      url: request.url,
+      method: request.method,
+    });
+    
     app.log.error(error);
-    reply.status(500).send({ error: "Internal Server Error" });
+    
+    // Handle validation errors
+    if (error.validation) {
+      return reply.status(400).send({
+        error: "Validation failed",
+        details: error.validation,
+      });
+    }
+    
+    reply.status(500).send({ 
+      error: "Internal Server Error",
+      message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+    });
   });
 
   return app;
