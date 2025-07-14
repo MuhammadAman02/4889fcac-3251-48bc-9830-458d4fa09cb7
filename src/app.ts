@@ -3,7 +3,7 @@ import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import helmet from "@fastify/helmet";
 import root from "./routes/root";
-
+import { fruitRoutes } from "./routes/fruit.route";
 
 export async function createApp() {
   const app = Fastify({
@@ -45,9 +45,9 @@ export async function createApp() {
     },
   });
 
-
   // Register routes
   app.register(root, { prefix: "/" });
+  app.register(fruitRoutes);
 
   // Global error handler
   app.setErrorHandler((error, request, reply) => {
